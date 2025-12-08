@@ -1,0 +1,10 @@
+.pinky {
+	color: pink; 
+}
+
+.inky {
+	color: cyan; 
+}
+.blinky {
+	color: red; 
+}

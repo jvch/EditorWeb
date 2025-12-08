@@ -1,0 +1,7 @@
+<h1>FANTASMAS DE PACMAN</h1>
+
+<p>PINKY es el fantasma rosa</p>
+
+<p>INKY es el fantasma cyan</p>
+
+<p>BLINKY es el fantasma rojo</p>

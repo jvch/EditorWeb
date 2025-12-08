@@ -1,0 +1,4 @@
+<h3>🐝ABEJAS🐝</h3>
+<img src="abeja.jpg" width="200px" style="float:left; margin-right: 20px; border-radius: 10px;">
+<p>Las abejas son insectos himenópteros y hay aproximadamente unas veinte mil especies conocidas. A excepción de la Antártida, las encuentras en los hábitats donde haya plantas con flores y se han adaptado para alimentarse con su néctar y polen.</p>
+<p>La especie más conocida es la Apis mellifera y es una especie muy sociable que vive en colmenas. Hay otras especies como los abejorros, que son semisociales y contribuyen también a la polinización.</p>

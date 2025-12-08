@@ -1,0 +1,4 @@
+<h2>ANIMALES POR TAMAÑO</h2>
+<p class="hormiga">Hormiga 🐜</p>
+<p class="raton">Ratón 🐀</p>
+<p class="elefante">Elefante 🐘</p>

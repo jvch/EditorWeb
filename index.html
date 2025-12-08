@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⌨EDITOR WEB</title>
+
+<!-- CodeMirror -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/htmlmixed/htmlmixed.min.js"></script>
+
+<!-- html2canvas -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+body {
+    margin:0;
+    font-family: "Segoe UI", Tahoma, Geneva, sans-serif;
+    display:flex;
+    flex-direction:column;
+    height:100vh;
+    background:#cce6ff;
+    color:#000;
+}
+
+#progressBarContainer {
+    width:100%;
+    background: linear-gradient(to bottom, #b0d4f1, #80bfff);
+    height:22px;
+    border-radius: 4px;
+    overflow:hidden;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+}
+
+#progressBar {
+    height:100%;
+    width:0%;
+    background: linear-gradient(to bottom, #0078d7, #005a9e);
+    transition: width 0.3s;
+    border-radius: 4px;
+}
+
+#panel {
+    flex:1;
+    display:flex;
+    gap:10px;
+    padding:10px;
+    overflow:hidden;
+}
+
+.left {
+    width:40%;
+    display:flex;
+    flex-direction:column;
+    background: linear-gradient(to bottom, #e6f2ff, #cce6ff);
+    border-radius: 6px;
+    padding:5px;
+}
+
+.right {
+    flex:1.5;
+    background:#ffffff;
+    border-radius:6px;
+    padding:5px;
+}
+
+.section {
+    padding:8px;
+    display:flex;
+    flex-direction:column;
+    background: rgba(255,255,255,0.8);
+    margin-bottom:8px;
+    border-radius:4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.section.instructions {
+    flex-direction:row;
+    align-items:flex-start;
+    gap:10px;
+    height:150px;
+}
+
+.instructions-text {
+    flex:1;
+    font-size:20px;
+    overflow-y:auto;
+}
+
+.instructions img {
+    width:120px;
+    border-radius:4px;
+    cursor:pointer;
+    background:#f0f0f0;
+    object-fit:contain;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.image-container {
+    display:flex;
+    gap:10px;
+    overflow-x:auto;
+    padding-top:5px;
+}
+
+.image-wrapper {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.image-container img {
+    max-height:60px;
+    border-radius:4px;
+    cursor:pointer;
+    background:#f0f0f0;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.image-name {
+    font-size:12px;
+    margin-top:4px;
+    text-align:center;
+}
+
+label {
+    font-size:14px;
+    font-weight:bold;
+    margin-bottom:4px;
+}
+
+.CodeMirror {
+    font-size:20px;
+    font-family: "Consolas", monospace;
+    border-radius:4px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+    height:100%;
+}
+
+.section.html-editor, .section.css-editor {
+    flex:1;
+    display:flex;
+    flex-direction:column;
+}
+
+iframe {
+    width:100%;
+    height:100%;
+    border-radius:4px;
+    box-shadow: inset 0 0 3px rgba(0,0,0,0.2);
+}
+
+footer {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:8px 20px;
+    background: linear-gradient(to bottom, #e6f2ff, #cce6ff);
+    border-top-left-radius:6px;
+    border-top-right-radius:6px;
+}
+
+footer button {
+    padding:6px 14px;
+    font-size:14px;
+    font-family: "Segoe UI", sans-serif;
+    background: linear-gradient(to bottom, #f0f8ff, #cce6ff);
+    border:none;
+    border-radius:4px;
+    cursor:pointer;
+    color:#000;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.3);
+    transition: 0.2s;
+}
+
+footer button:hover:not(:disabled) {
+    background: linear-gradient(to bottom, #d0e8ff, #80bfff);
+}
+
+footer button:disabled {
+    background:#a0c0d0;
+    color:#666;
+    cursor:not-allowed;
+    box-shadow:none;
+}
+
+#imgModal, #finishModal {
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.3);
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+}
+
+#imgModalContent, #finishModalContent {
+    background:#ffffff;
+    border-radius:6px;
+    padding:20px 40px;
+    text-align:center;
+    font-family: "Segoe UI", sans-serif;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+#imgModalContent button, #finishModalContent button {
+    margin-top:10px;
+    padding:6px 12px;
+    font-family: "Segoe UI", sans-serif;
+    font-size:14px;
+    border:none;
+    border-radius:4px;
+    background: linear-gradient(to bottom, #f0f8ff, #cce6ff);
+    cursor:pointer;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.3);
+    transition:0.2s;
+}
+
+#imgModalContent button:hover, #finishModalContent button:hover {
+    background: linear-gradient(to bottom, #d0e8ff, #80bfff);
+}
+</style>
+</head>
+<body>
+
+<div id="progressBarContainer"><div id="progressBar"></div></div>
+
+<div id="panel">
+    <div class="left">
+        <div class="section instructions">
+            <div class="instructions-text" id="instructionsText">Cargando instrucciones...</div>
+            <img id="instructionImg" src="">
+        </div>
+
+        <div class="section image-preview">
+            <label>Imágenes (haz click para cambiar el nombre)</label>
+            <input type="file" id="imageUpload" accept="image/*" multiple>
+            <div id="imageContainer" class="image-container"></div>
+        </div>
+
+        <div class="section html-editor">
+            <label>HTML</label>
+            <textarea id="htmlCode"></textarea>
+        </div>
+
+        <div class="section css-editor">
+            <label>CSS</label>
+            <textarea id="cssCode"></textarea>
+        </div>
+    </div>
+
+    <div class="right">
+        <iframe id="preview"></iframe>
+    </div>
+</div>
+
+<footer>
+    <button id="prevLevel">Anterior</button>
+    <button id="finishLevel">Terminar</button>
+    <button id="nextLevel" disabled>Siguiente</button>
+</footer>
+
+<div id="imgModal">
+    <div id="imgModalContent">
+        <img id="modalImg">
+        <button id="modalCloseBtn">Cerrar</button>
+    </div>
+</div>
+
+<div id="finishModal">
+    <div id="finishModalContent">
+        <p>¡Terminaste todos los ejercicios!</p>
+        <p>Se descargará una imagen con tus páginas 📷</p>
+        <p>Regresa a Classroom y sube esa imagen a la actividad ➡</p>
+        <button id="finishModalBtn">Cerrar</button>
+    </div>
+</div>
+
+<script>
+// ================= CodeMirror
+const htmlEditor = CodeMirror.fromTextArea(htmlCode, {mode:"htmlmixed", lineNumbers:true, tabSize:4});
+const cssEditor = CodeMirror.fromTextArea(cssCode, {mode:"css", lineNumbers:true, tabSize:4});
+
+// ================= Globals
+let uploadedImages = {};
+let levels = [];
+let currentLevel = 0;
+let finishedLevels = 0;
+let screenshots = [];
+let finishedFlags = [];
+
+// ================= Load levels
+fetch("levels.json").then(r=>r.json()).then(data=>{
+    levels = data;
+    finishedFlags = new Array(levels.length).fill(false);
+    loadLevel(0);
+});
+
+// ================= Load a level
+function loadLevel(i){
+    if(i<0||i>=levels.length) return;
+    currentLevel = i;
+    const L = levels[i];
+
+    instructionsText.textContent = L.instructions||"";
+    instructionImg.src = L.instructionImage||"";
+
+    uploadedImages = {};
+    imageContainer.innerHTML = "";
+    if(L.images) L.images.forEach(path=>{
+        uploadedImages[path] = path;
+        addImage(path,path);
+    });
+
+    fetch(L.htmlFile).then(r=>r.text()).then(t=>htmlEditor.setValue(t));
+    fetch(L.cssFile).then(r=>r.text()).then(t=>cssEditor.setValue(t));
+
+    updatePreview();
+
+    // Enable/disable buttons based on progress
+    nextLevel.disabled = !finishedFlags[currentLevel] || currentLevel === levels.length-1 ? true : false;
+    finishLevel.disabled = finishedFlags[currentLevel];
+    prevLevel.disabled = currentLevel === 0;
+}
+
+// ================= Add image
+function addImage(name,url){
+    const w = document.createElement("div"); w.className="image-wrapper";
+    const img = document.createElement("img"); img.src=url; img.title=name;
+    const span = document.createElement("span"); span.textContent=name; span.className="image-name";
+    w.appendChild(img); w.appendChild(span); imageContainer.appendChild(w);
+}
+
+// ================= Update preview
+function updatePreview(){
+    let html = htmlEditor.getValue();
+    Object.keys(uploadedImages).forEach(fn=>{
+        const re = new RegExp(`src=(["'])${fn}\\1`,"g");
+        html = html.replace(re,`src="${uploadedImages[fn]}"`);
+    });
+    preview.srcdoc = `<style>${cssEditor.getValue()}</style>${html}`;
+}
+
+htmlEditor.on("change",updatePreview);
+cssEditor.on("change",updatePreview);
+
+// ================= Navigation
+prevLevel.onclick = ()=>loadLevel(currentLevel-1);
+nextLevel.onclick = ()=>loadLevel(currentLevel+1);
+
+// ================= Upload images
+imageUpload.onchange = e=>{
+    [...e.target.files].forEach(f=>{
+        const url = URL.createObjectURL(f);
+        uploadedImages[f.name] = url;
+        addImage(f.name,url);
+        updatePreview();
+    });
+};
+
+// ================= Rename images
+imageContainer.onclick = e=>{
+    if(e.target.tagName!=="IMG") return;
+    const old = e.target.title;
+    const base = old.split(".")[0];
+    const ext = old.split(".").splice(1).join(".");
+    const newBase = prompt("Enter new filename:",base);
+    if(!newBase) return;
+    const newName = ext?`${newBase}.${ext}`:newBase;
+    uploadedImages[newName]=uploadedImages[old];
+    delete uploadedImages[old];
+    e.target.title=newName;
+    e.target.nextSibling.textContent=newName;
+    updatePreview();
+};
+
+// ================= Modal for instruction images
+instructionImg.onclick=()=>{ 
+    modalImg.src=instructionImg.src; 
+    imgModal.style.display="flex"; 
+}
+document.getElementById("modalCloseBtn").onclick = ()=> imgModal.style.display="none";
+imgModal.onclick=e=>{ if(e.target===imgModal) imgModal.style.display="none"; };
+
+// ================= Capture full preview area screenshot with white default background
+async function capturePreviewScreenshot() {
+    const iframe = document.getElementById("preview");
+    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+    const iframeBody = iframeDoc.body;
+
+    const rect = iframe.getBoundingClientRect();
+    const clone = iframeBody.cloneNode(true);
+
+    function copyComputedStyles(src, dest) {
+        const computed = iframe.contentWindow.getComputedStyle(src);
+        for (let key of computed) {
+            dest.style[key] = computed.getPropertyValue(key);
+        }
+        Array.from(src.children).forEach((child, i) => {
+            if (dest.children[i]) copyComputedStyles(child, dest.children[i]);
+        });
+    }
+    copyComputedStyles(iframeBody, clone);
+
+    const container = document.createElement("div");
+    container.style.width = rect.width + "px";
+    container.style.height = rect.height + "px";
+    container.style.position = "absolute";
+    container.style.top = "0";
+    container.style.left = "0";
+    container.style.overflow = "hidden";
+
+    const bodyStyles = iframe.contentWindow.getComputedStyle(iframeBody);
+    container.style.background = bodyStyles.backgroundColor && bodyStyles.backgroundColor !== "rgba(0, 0, 0, 0)" 
+                                 ? bodyStyles.backgroundColor 
+                                 : "#ffffff";
+
+    clone.style.width = "100%";
+    clone.style.height = "100%";
+    container.appendChild(clone);
+    document.body.appendChild(container);
+
+    const canvas = await html2canvas(container, { backgroundColor: null, scale: 1, useCORS: true });
+    document.body.removeChild(container);
+    return canvas.toDataURL("image/png");
+}
+
+// ================= Finish button behavior
+finishLevel.onclick = async () => {
+    // Disable immediately to prevent multiple clicks
+    finishLevel.disabled = true;
+
+    if(!finishedFlags[currentLevel]){
+        const png = await capturePreviewScreenshot();
+        screenshots.push(png);
+        finishedFlags[currentLevel] = true;
+        finishedLevels++;
+        updateProgressBar();
+
+        nextLevel.disabled = currentLevel < levels.length - 1 ? false : true;
+
+        if(currentLevel === levels.length - 1){
+            document.getElementById("finishModal").style.display = "flex";
+        }
+    }
+};
+
+// ================= Finish modal button
+document.getElementById("finishModalBtn").onclick = () => {
+    document.getElementById("finishModal").style.display = "none";
+    mergeScreenshots();
+};
+
+// ================= Update progress bar
+function updateProgressBar(){
+    const percent = (finishedLevels / levels.length) * 100;
+    progressBar.style.width = percent + "%";
+}
+
+// ================= Merge screenshots vertically
+function mergeScreenshots() {
+    if (screenshots.length === 0) return;
+
+    const imgs = [];
+    let loaded = 0;
+
+    screenshots.forEach(src => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => {
+            imgs.push(img);
+            loaded++;
+            if (loaded === screenshots.length) {
+                const totalHeight = imgs.reduce((sum, i) => sum + i.height, 0);
+                const maxWidth = Math.max(...imgs.map(i => i.width));
+
+                const canvas = document.createElement("canvas");
+                canvas.width = Math.ceil(maxWidth);
+                canvas.height = Math.ceil(totalHeight);
+                const ctx = canvas.getContext("2d");
+
+                let y = 0;
+                imgs.forEach(i => {
+                    ctx.drawImage(i, 0, y, i.width, i.height);
+                    y += i.height;
+                });
+
+                canvas.toBlob(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = "merged_screenshots.png";
+                    a.click();
+                    URL.revokeObjectURL(url);
+                }, "image/png");
+            }
+        };
+        img.src = src;
+    });
+}
+</script>
+
+</body>
+</html>
