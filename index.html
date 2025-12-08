@@ -319,10 +319,15 @@ function loadLevel(i){
         addImage(path,path);
     });
 
-    fetch(L.htmlFile).then(r=>r.text()).then(t=>htmlEditor.setValue(t));
-    fetch(L.cssFile).then(r=>r.text()).then(t=>cssEditor.setValue(t));
-
-    updatePreview();
+    // Cargar HTML y CSS y forzar actualización inmediata
+    fetch(L.htmlFile).then(r=>r.text()).then(t=>{
+        htmlEditor.setValue(t);
+        updatePreview(); // fuerza actualización inmediata
+    });
+    fetch(L.cssFile).then(r=>r.text()).then(t=>{
+        cssEditor.setValue(t);
+        updatePreview(); // fuerza actualización inmediata
+    });
 
     // Enable/disable buttons based on progress
     nextLevel.disabled = !finishedFlags[currentLevel] || currentLevel === levels.length-1 ? true : false;
