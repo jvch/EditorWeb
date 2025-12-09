@@ -344,7 +344,8 @@ function loadLevel(i) {
     });
 
     // ================= Enable/disable navigation buttons
-    nextLevel.disabled = finishedFlags[currentLevel] || currentLevel === levels.length - 1;
+    //nextLevel.disabled = finishedFlags[currentLevel] || currentLevel === levels.length - 1;
+    nextLevel.disabled = !(finishedFlags[currentLevel] || currentLevel === levels.length - 1);
     finishLevel.disabled = finishedFlags[currentLevel];
     prevLevel.disabled = currentLevel === 0;
 }
