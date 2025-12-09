@@ -313,7 +313,7 @@ function loadLevel(i) {
     const L = levels[i];
 
     // ================= Set instructions
-    instructionsText.textContent = L.instructions || "";
+    instructionsText.innerHTML = L.instructions || "";
     instructionImg.src = L.instructionImage || "";
 
     // ================= Reset images
@@ -538,5 +538,6 @@ function mergeScreenshots() {
 
 </body>
 </html>
+
 
 
