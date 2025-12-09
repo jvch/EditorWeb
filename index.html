@@ -347,6 +347,12 @@ function loadLevel(i) {
     //nextLevel.disabled = finishedFlags[currentLevel] || currentLevel === levels.length - 1;
     nextLevel.disabled = !(finishedFlags[currentLevel] || currentLevel === levels.length - 1);
     finishLevel.disabled = finishedFlags[currentLevel];
+    // Next Level logic
+    if (currentLevel === levels.length - 1) {
+        nextLevel.disabled = true;   // last level → cannot go next
+    } else {
+        nextLevel.disabled = !finishedFlags[currentLevel]; // other levels → only enable if finished
+    }
     prevLevel.disabled = currentLevel === 0;
 }
 
@@ -530,3 +536,4 @@ function mergeScreenshots() {
 
 </body>
 </html>
+
