@@ -304,36 +304,51 @@ fetch("levels.json").then(r=>r.json()).then(data=>{
 });
 
 // ================= Load a level
-function loadLevel(i){
-    if(i<0||i>=levels.length) return;
+function loadLevel(i) {
+    // Check for valid level index
+    if (i < 0 || i >= levels.length) return;
     currentLevel = i;
     const L = levels[i];
 
-    instructionsText.textContent = L.instructions||"";
-    instructionImg.src = L.instructionImage||"";
+    // ================= Set instructions
+    instructionsText.textContent = L.instructions || "";
+    instructionImg.src = L.instructionImage || "";
 
+    // ================= Reset images
     uploadedImages = {};
     imageContainer.innerHTML = "";
-    if(L.images) L.images.forEach(path=>{
-        uploadedImages[path] = path;
-        addImage(path,path);
+    if (L.images) {
+        L.images.forEach(path => {
+            uploadedImages[path] = path;
+            addImage(path, path);
+        });
+    }
+
+    // ================= Fetch HTML and CSS in parallel
+    Promise.all([
+        fetch(L.htmlFile).then(res => res.text()),
+        fetch(L.cssFile).then(res => res.text())
+    ]).then(([htmlText, cssText]) => {
+        // Set CodeMirror editors
+        htmlEditor.setValue(htmlText);
+        cssEditor.setValue(cssText);
+
+        // Force CodeMirror to refresh (in case of hidden containers)
+        htmlEditor.refresh();
+        cssEditor.refresh();
+
+        // Update the preview iframe immediately
+        updatePreview();
+    }).catch(err => {
+        console.error("Error loading level files:", err);
     });
 
-    // Cargar HTML y CSS y forzar actualización inmediata
-    fetch(L.htmlFile).then(r=>r.text()).then(t=>{
-        htmlEditor.setValue(t);
-        updatePreview(); // fuerza actualización inmediata
-    });
-    fetch(L.cssFile).then(r=>r.text()).then(t=>{
-        cssEditor.setValue(t);
-        updatePreview(); // fuerza actualización inmediata
-    });
-
-    // Enable/disable buttons based on progress
-    nextLevel.disabled = !finishedFlags[currentLevel] || currentLevel === levels.length-1 ? true : false;
+    // ================= Enable/disable navigation buttons
+    nextLevel.disabled = finishedFlags[currentLevel] || currentLevel === levels.length - 1;
     finishLevel.disabled = finishedFlags[currentLevel];
     prevLevel.disabled = currentLevel === 0;
 }
+
 
 // ================= Add image
 function addImage(name,url){
@@ -353,8 +368,8 @@ function updatePreview(){
     preview.srcdoc = `<style>${cssEditor.getValue()}</style>${html}`;
 }
 
-htmlEditor.on("change",updatePreview);
-cssEditor.on("change",updatePreview);
+htmlEditor.on("change",updatePreview); //
+cssEditor.on("change",updatePreview); //
 
 // ================= Navigation
 prevLevel.onclick = ()=>loadLevel(currentLevel-1);
@@ -501,7 +516,7 @@ function mergeScreenshots() {
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement("a");
                     a.href = url;
-                    a.download = "merged_screenshots.png";
+                    a.download = "paginas.png";
                     a.click();
                     URL.revokeObjectURL(url);
                 }, "image/png");
