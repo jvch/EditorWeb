@@ -1,20 +1,20 @@
 [
     {
-        "instructions": "Ejercicio 1: Haz que los párrafos siguientes tengan un color diferente cada uno. Modifica el HTML para que reconozca los estilos en el CSS.",
+        "instructions": "<b>Ejercicio 1:</b> Haz que los párrafos siguientes tengan un color diferente cada uno. Modifica el HTML para que reconozca los estilos en el CSS.",
         "instructionImage": "imagen1.png",
         "images": [],
         "htmlFile": "level1/html.txt",
         "cssFile": "level1/style.txt"
     },
     {
-        "instructions": "Ejercicio 2: Agrega el CSS para que los párrafos con los animales tengan el tamaño correcto.\nLa hormiga debe ser de 10px, el ratón de 30px y el elefante de 100px.\nA continuación se muestra el código para la hormiga, agrega los demás.",
+        "instructions": "<b>Ejercicio 2:</b> Agrega el CSS para que los párrafos con los animales tengan el tamaño correcto.\nLa hormiga debe ser de 10px, el ratón de 30px y el elefante de 100px.\nA continuación se muestra el código para la hormiga, agrega los demás.",
         "instructionImage": "imagen2.png",
         "images": [],
         "htmlFile": "level2/html.txt",
         "cssFile": "level2/style.txt"
     },
     {
-        "instructions": "Ejercicio 3: Agrega valores a las propiedades del CSS en body para que la página tenga estilo.\nEn la tabla se muestran valores posibles. ",
+        "instructions": "<b>Ejercicio 3:</b> Agrega valores a las propiedades del CSS en body para que la página tenga estilo.\nEn la tabla se muestran valores posibles. ",
         "instructionImage": "imagen3.png",
         "images": ["abeja.jpg"],
         "htmlFile": "level3/html.txt",
